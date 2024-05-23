@@ -3,7 +3,7 @@ import express, { Express } from "express";
 
 import bullBoardAdapter from "./config/bullBoardConfig";
 import serverConfig from "./config/serverConfig";
-import runPython from "./containers/runPythonDocker";
+import runJava from "./containers/runJavaDocker";
 import apiRouter from "./routes";
 import SampleWorker from "./workers/sampleWorker";
 
@@ -13,24 +13,31 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 
-app.use('/api', apiRouter);
-app.use('/ui', bullBoardAdapter.getRouter());
+app.use("/api", apiRouter);
+app.use("/ui", bullBoardAdapter.getRouter());
 
 app.listen(serverConfig.port, () => {
     console.log("Server is running on port", serverConfig.port);
 
     console.log(`BullBoard dashboard running on: http://localhost:${serverConfig.port}/ui`);
 
-    SampleWorker('SampleQueue');
+    SampleWorker("SampleQueue");
 
-    const code = `x = input()
-y = input()
-print("value of x is", x)
-print("value of y is", y)
-`;
+    const code = `
+    import java.util.*;
+    public class Main {
+        public static void main(String[] args) {
+            Scanner scn = new Scanner(System.in);
+            int input = scn.nextInt();
+            System.out.println("Input value given by user: " + input);
+            for(int i = 0; i <= input; i++) {
+                System.out.println(i);
+            };
+        };
+    };
+    `;
 
-    const inputCase = `100 
-    200`;
+    const inputCase = `10`;
 
-    runPython(code, inputCase);
+    runJava(code, inputCase);
 });

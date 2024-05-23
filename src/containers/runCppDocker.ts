@@ -2,32 +2,35 @@
 
 // import { TestCases } from '../types/testCases';
 
-import { PYTHON_IMAGE } from "../utils/constants";
+import { CPP_IMAGE } from "../utils/constants";
 import createContainer from "./containerFactory";
 import decodeDockerStream from "./dockerHelper";
+import pullImage from "./pullImage";
 
-async function runPython(code: string, inputTestCase: string) {
+async function runCpp(code: string, inputTestCase: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rowLogBuffer: Buffer[] = [];
 
-    console.log("Initializing a new Python Docker Container");
+    console.log("Initializing a new C++ Docker Container");
+
+    await pullImage(CPP_IMAGE);
 
     // const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > test.py && echo ${inputTestCase} | python3 test.py`;
 
-    const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > test.py && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | python3 test.py`;
+    const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > main.cpp && g++ main.cpp && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | java Main`;
 
     console.log(runCommand);
 
     // const pythonDockerContainer = await createContainer(PYTHON_IMAGE, ['python3', '-c', code, 'stty -echo']);
 
-    const pythonDockerContainer = await createContainer(PYTHON_IMAGE, ["/bin/sh", "-c", runCommand]);
+    const cppDockerContainer = await createContainer(CPP_IMAGE, ["/bin/sh", "-c", runCommand]);
 
     // starting / booting the corresponding container
-    await pythonDockerContainer.start();
+    await cppDockerContainer.start();
 
     console.log("Docker container started");
 
-    const loggerStream = await pythonDockerContainer.logs({
+    const loggerStream = await cppDockerContainer.logs({
         stdout: true,
         stderr: true,
         timestamps: false,
@@ -51,7 +54,7 @@ async function runPython(code: string, inputTestCase: string) {
     // return pythonDockerContainer;
 
     await new Promise((res) => {
-        loggerStream.on('end', () => {
+        loggerStream.on("end", () => {
             console.log(rowLogBuffer);
             const completeBuffer = Buffer.concat(rowLogBuffer);
             const decodedStream = decodeDockerStream(completeBuffer);
@@ -60,9 +63,9 @@ async function runPython(code: string, inputTestCase: string) {
             res(decodeDockerStream);
         });
     });
-    
+
     // remove the container when done with it
-    await pythonDockerContainer.remove();
+    await cppDockerContainer.remove();
 }
 
-export default runPython;
+export default runCpp;
