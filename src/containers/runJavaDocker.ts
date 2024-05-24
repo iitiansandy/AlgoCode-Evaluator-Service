@@ -24,8 +24,8 @@ async function runJava(code: string, inputTestCase: string) {
     // const pythonDockerContainer = await createContainer(PYTHON_IMAGE, ['python3', '-c', code, 'stty -echo']);
 
     const javaDockerContainer = await createContainer(JAVA_IMAGE, [
-        '/bin/sh', 
-        '-c', 
+        '/bin/sh',
+        '-c',
         runCommand
     ]);
 

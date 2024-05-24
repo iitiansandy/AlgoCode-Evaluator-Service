@@ -17,9 +17,9 @@ async function runCpp(code: string, inputTestCase: string) {
 
     // const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > test.py && echo ${inputTestCase} | python3 test.py`;
 
-    const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > main.cpp && g++ main.cpp && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | java Main`;
+    const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > main.cpp && g++ main.cpp -o main && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | ./main`;
 
-    console.log(runCommand);
+    console.log("runCommand", runCommand);
 
     // const pythonDockerContainer = await createContainer(PYTHON_IMAGE, ['python3', '-c', code, 'stty -echo']);
 
