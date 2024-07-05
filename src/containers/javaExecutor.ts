@@ -9,9 +9,10 @@ import decodeDockerStream from "./dockerHelper";
 import pullImage from "./pullImage";
 
 class JavaExecutor implements CodeExecutorStrategy {
-    async execute(code: string, inputTestCase: string): Promise<ExecutionResponse> {
+    async execute(code: string, inputTestCase: string, outputTestCase: string): Promise<ExecutionResponse> {
         const rowLogBuffer: Buffer[] = [];
 
+        console.log(code, inputTestCase, outputTestCase);
         console.log("Initializing a new Java Docker Container");
 
         await pullImage(JAVA_IMAGE);

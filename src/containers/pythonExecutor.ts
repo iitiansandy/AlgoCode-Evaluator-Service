@@ -9,9 +9,11 @@ import decodeDockerStream from "./dockerHelper";
 // import pullImage from "./pullImage";
 
 class PythonExecutor implements CodeExecutorStrategy {
-    async execute(code: string, inputTestCase: string): Promise<ExecutionResponse> {
+    async execute(code: string, inputTestCase: string, outputTestCase: string): Promise<ExecutionResponse> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rowLogBuffer: Buffer[] = [];
+
+        console.log(code, inputTestCase, outputTestCase);
 
         console.log("Initializing a new Python Docker Container");
 
